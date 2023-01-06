@@ -13,6 +13,7 @@ filename = input("Please type name of file: ")
 
 load_dotenv()
 
+#look at sample .env for how the below information is like
 client_id = os.getenv("CLIENT_ID", "")
 client_secret = os.getenv("CLIENT_SECRET", "")
 username = os.getenv("USERNAME", "")
@@ -26,7 +27,7 @@ auth_headers = {
 }
 
 webbrowser.open("https://accounts.spotify.com/authorize?" + urlencode(auth_headers))
-#copy code in the navigation bar and store it in .env
+#copy code in the navigation bar and store it in .env for auth_headers
 
 code = os.getenv("CODE","")
 
@@ -65,8 +66,7 @@ class SongMetadata:
         return tuple_list
 
 
-    # Step 3: Get each song's Spotify uri
-    #def get_spotify_uri(self, song, artist):
+    # Get each song's information
     
     def get_spotify_info(self, song, artist):
         query = "https://api.spotify.com/v1/search?query=track%3A{}&type=track&offset=0&limit=1".format(song, artist)
@@ -105,31 +105,11 @@ class SongMetadata:
         except:
             duration_ms = 'N/A' 
         
-        #songs = response_json["tracks"]
-        
-        #songs = prettify_response_json
-        #print("type of response_json",type(response_json))
-        #print("response_json:",prettify_response_json,'\n')
-        #print("type of duration_ms",type(duration_ms))
-       # print("duration_ms:", duration_ms)
-        
-        # URI
-        #uri = songs[0]["uri"]
-        
-        #print("uri:",uri)
-        #return uri
         return song_name, artist_name, uri, release_date, duration_ms, popularity
 
     # Step 4: Add songs to a list
     def add_to_list(self):
-        '''
-        uri_s = []
-        artist_name_s = []
-        popularity_s = [] 
-        song_name_s = []
-        release_date_s = [] 
-        duration_ms_s = [] 
-        '''
+        
         info = []
         
         # Loop through tuples and get URIs
