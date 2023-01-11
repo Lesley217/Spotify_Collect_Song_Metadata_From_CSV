@@ -3,6 +3,7 @@ import urllib.request, urllib.parse, urllib.error
 from urllib.parse import urlencode
 import base64
 import webbrowser
+
 from dotenv import load_dotenv
 import os
 import pandas as pd
@@ -17,12 +18,28 @@ load_dotenv()
 client_id = os.getenv("CLIENT_ID", "")
 client_secret = os.getenv("CLIENT_SECRET", "")
 username = os.getenv("USERNAME", "")
-redirect_url = os.getenv("REDIRECT_URL", "")
+redirect_uri = os.getenv("REDIRECT_URI", "")
+scope = "playlist-modify-public"
 
+# Method 1 authentication 
+AUTH_URL= 'https://accounts.spotify.com/api/token'
+
+auth_response = requests.post(AUTH_URL,{
+    'grant_type' :'client_credentials',
+    'client_id': client_id,
+    'client_secret': client_secret,
+})
+
+auth_response_data = auth_response.json()
+
+token = auth_response_data['access_token']
+
+# Method 2 authentication
+'''
 auth_headers = {
     "client_id": client_id,
     "response_type": "code",
-    "redirect_uri": redirect_url,
+    "redirect_uri": redirect_uri,
     "scope": "playlist-modify-public"
 }
 
@@ -41,7 +58,7 @@ token_headers = {
 token_data = {
     "grant_type": "authorization_code",
     "code": code,
-    "redirect_uri": redirect_url
+    "redirect_uri": redirect_uri
 }
 
 r = requests.post("https://accounts.spotify.com/api/token", data=token_data, headers=token_headers)
@@ -49,6 +66,7 @@ r = requests.post("https://accounts.spotify.com/api/token", data=token_data, hea
 token = r.json()["access_token"]
 
 print("token:",token)
+'''
 
 class SongMetadata:
 
@@ -97,6 +115,10 @@ class SongMetadata:
         except:
             song_name = 'N/A'    
         try:
+            album_name =  response_json["tracks"]["items"][0]["album"]["name"]  
+        except: 
+            album_name = "N/A"
+        try:
             release_date = response_json["tracks"]["items"][0]["album"]["release_date"]
         except:
             release_date = 'N/A' 
@@ -105,7 +127,7 @@ class SongMetadata:
         except:
             duration_ms = 'N/A' 
         
-        return song_name, artist_name, uri, release_date, duration_ms, popularity
+        return song_name, artist_name, uri, album_name, release_date, duration_ms, popularity
 
     # Step 4: Add songs to a list
     def add_to_list(self):
@@ -124,7 +146,7 @@ if __name__ == '__main__':
     cp = SongMetadata()
     data = cp.add_to_list()
     
-    header = ['Song Name','Artist Name', 'uri', 'Release Date','Duration (ms)','Popularity']
+    header = ['Song Name','Artist Name', 'uri', 'Album name', 'Release Date','Duration (ms)','Popularity']
     with open('spotify_output.csv','w', encoding = 'UTF-8', newline = '') as f:
         w = writer(f)
         w.writerow(header)
