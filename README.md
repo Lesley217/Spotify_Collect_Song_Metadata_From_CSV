@@ -17,7 +17,7 @@
     - csv (pip install python-csv)
     - json (no need to install, installed with Python package)
 
-Other modules (required if method 2 authentication was used)
+ Other modules (required if method 2 authentication was used):
     - base64 (pip install pybase64)
     - webbrowser (no need to install, installed with Python package)
 
